@@ -5,7 +5,6 @@ import { Response } from 'express';
 export class AppController {
   @Get('/api/hello') // Specify the path here
   getHello(@Res() res: Response): void {
-    console.log('Hello World');
     res.status(HttpStatus.OK).json({ message: 'Hello World' });
   }
 }
