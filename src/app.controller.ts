@@ -1,10 +1,13 @@
-import { Controller, Get, HttpStatus, Res } from '@nestjs/common';
-import { Response } from 'express';
+import { Controller, Get } from '@nestjs/common';
+import { School } from '@prisma/client';
+import { PostService } from './school.service';
 
 @Controller()
-export class AppController {
-  @Get('/api/hello') // Specify the path here
-  getHello(@Res() res: Response): void {
-    res.status(HttpStatus.OK).json({ message: 'Hello World' });
+export class PostController {
+  constructor(private readonly postService: PostService) {}
+
+  @Get('api/school')
+  async getPostById(): Promise<School> {
+    return this.postService.getSchool();
   }
 }
