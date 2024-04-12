@@ -4,8 +4,8 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
-   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  url               = env("DATABASE_URL")
+  directUrl         = env("DIRECT_URL")
 }
 
 // datasource db {
@@ -13,6 +13,16 @@ datasource db {
 //   url = env("POSTGRES_PRISMA_URL") // uses connection pooling
 //   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 // } 
+
+model Dummy {
+  id    Int     @id @default(autoincrement())
+  name  String
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@map("dummies")
+}
 
 model School {
   id    Int     @id @default(autoincrement())
