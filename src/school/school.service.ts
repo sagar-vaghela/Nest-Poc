@@ -1,32 +1,9 @@
-// import { Injectable } from '@nestjs/common';
-// import { PrismaService } from './prisma.service';
-// import { Prisma, School } from '@prisma/client';
-
-// @Injectable()
-// export class SchoolService {
-//   constructor(private prisma: PrismaService) {}
-
-//   async getSchool(): Promise<School | null> {
-//     return this.prisma.school.findUnique({
-//       where: { id: 1 },
-//     });
-//   }
-
-//   async post(
-//     postWhereUniqueInput: Prisma.SchoolWhereUniqueInput,
-//   ): Promise<School | null> {
-//     return this.prisma.school.findUnique({
-//       where: postWhereUniqueInput,
-//     });
-//   }
-// }
-
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from './prisma.service';
 import { School, Prisma } from '@prisma/client';
+import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
-export class PostService {
+export class SchoolService {
   constructor(private prisma: PrismaService) {}
 
   async post(
