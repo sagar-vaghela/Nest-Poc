@@ -1,0 +1,206 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+// datasource db {
+//   provider = "postgresql"
+//   url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+//   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+// } 
+
+model School {
+  id    Int     @id @default(autoincrement())
+  name  String  @unique
+
+  creatorId Int
+
+  users User[]
+  subjects Subject[]
+  modules Module[]
+  chapters Chapter[]
+  lessons Lesson[]
+  prompts Prompt[]
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@map("schools")
+}
+
+model User {
+  id    Int     @id @default(autoincrement())
+  inviteId Int? 
+  email String  @unique
+  hash  String?
+  name  String?
+  role  String?
+
+  schoolId Int?
+  school   School? @relation(fields: [schoolId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  mySubjects  Subject[]
+  myModules  Module[]
+  myChapters  Chapter[]
+  myLessons  Lesson[]
+  myPrompts  Prompt[]
+
+  chatLogs ChatLog[]
+
+  joinedSubjects Subject[]  @relation("UserSubject")
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@map("users")
+}
+
+model Subject {
+  id      Int    @id @default(autoincrement())
+  name String @unique
+  describe String? 
+
+  creatorId Int
+  creator   User @relation(fields: [creatorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  schoolId Int?
+  school   School? @relation(fields: [schoolId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  modules Module[]
+
+  chatLogs ChatLog[]
+
+  students User[]  @relation("UserSubject")
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@map("subjects")
+}
+
+model Module {
+  id      Int    @id @default(autoincrement())
+  name String 
+  describe String? 
+
+  creatorId Int
+  creator   User @relation(fields: [creatorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  subjectId Int
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  schoolId Int?
+  school   School? @relation(fields: [schoolId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  chapters Chapter[]
+
+  chatLogs ChatLog[]
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@map("modules")
+}
+
+model Chapter {
+  id   Int    @id @default(autoincrement())
+  name String 
+  describe String? 
+
+  creatorId Int
+  creator   User @relation(fields: [creatorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  moduleId Int
+  module   Module @relation(fields: [moduleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  schoolId Int?
+  school   School? @relation(fields: [schoolId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  lessons Lesson[]
+  chatLogs ChatLog[]
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@map("chapters")
+}
+
+model Lesson {
+  id      Int    @id @default(autoincrement())
+  name String 
+  describe String? 
+  passage String?
+  quiz String?
+
+  creatorId Int
+  creator   User @relation(fields: [creatorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  chapterId Int
+  chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  schoolId Int?
+  school   School? @relation(fields: [schoolId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  chatLogs ChatLog[]
+  prompts Prompt[]
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@map("lessons")
+}
+
+model Prompt {
+  id   Int    @id @default(autoincrement())
+  text String 
+
+  creatorId Int
+  creator   User @relation(fields: [creatorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  lessonId Int
+  lesson  Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  schoolId Int?
+  school   School? @relation(fields: [schoolId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  chatLogs ChatLog[]
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@map("prompts")
+}
+
+model ChatLog {
+  id   Int    @id @default(autoincrement())
+  question String
+  answer String
+
+  creatorId Int
+  creator      User @relation(fields: [creatorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  subjectId Int?
+  subject  Subject? @relation(fields: [subjectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  moduleId Int?
+  module  Module? @relation(fields: [moduleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  chapterId Int?
+  chapter  Chapter? @relation(fields: [chapterId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  lessonId Int?
+  lesson  Lesson? @relation(fields: [lessonId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  promptId Int?
+  prompt  Prompt? @relation(fields: [promptId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@map("chatlogs")
+}
